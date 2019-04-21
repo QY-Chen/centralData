@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.imec.central.components.collection.mapper.PressurePointMapper">
+    <resultMap id="pressureData" type="com.imec.central.components.collection.pojo.PressureData">
+
+    </resultMap>
+
+    <insert id="addPressureData" parameterType="Map">
+        INSERT INTO
+          pressure_detec_point(point1_value,point2_value,point3_value,point4_value,point5_value,point6_value,point7_value,point8_value,point9_value,
+                               point10_value,point11_value,point12_value,point13_value,point14_value,point15_value,point16_value)
+        VALUES (#{pressurePoint1},#{pressurePoint2},#{pressurePoint3},#{pressurePoint4},#{pressurePoint5},#{pressurePoint6},#{pressurePoint7},#{pressurePoint8},
+                #{pressurePoint9},#{pressurePoint10},#{pressurePoint11},#{pressurePoint12},#{pressurePoint13},#{pressurePoint14},#{pressurePoint15},#{pressurePoint16})
+    </insert>
+
+    <select id="queryPressureData" >
+        SELECT * FROM pressure_detec_point
+        WHERE insert_time = (SELECT max (insert_time) FROM  pressure_detec_point)
+    </select>
+</mapper>

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.imec.central.components.analysis.mapper.AnalysisMapper">
+
+    <select id="resource_device" resultType="java.util.HashMap">
+        SELECT num,table_name from resource_device_info
+    </select>
+
+    <select id="terminal_device" resultType="java.util.HashMap">
+        SELECT num,table_name from terminal_device_info
+    </select>
+
+    <!-- 统计设备上一小时耗电量,参数为设备编号device_num,设备类型type（冷源电耗=cspc，末端电耗=actpc ）设备对应的表名table_name -->
+    <insert id="statistics" parameterType="java.util.HashMap">
+        INSERT INTO ${type}(device_num,add_time,time,pc)
+        VALUES
+            (#{device_num},now(),DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H'),
+                SELECT(
+                    (SELECT ammeter from ${table_name} where station_num=#{station_num} and time=
+                        (SELECT MAX(time) FROM ${table_name} WHERE device_num=#{device_num} and time &lt;= DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H'))
+                    )-
+                    (SELECT ammeter from ${table_name} where station_num=#{station_num} and time=
+                        (SELECT MIN(time) FROM ${table_name} WHERE device_num=#{device_num} and time &lt;= DATE_FORMAT(NOW(),'%Y-%m-%d %H'))
+                    )
+                )
+            )
+    </insert>
+
+    <!-- 统计站点的电耗，参数为station_num站点编号 -->
+    <insert id="power_statistics" parameterType="int">
+        INSERT INTO power_statistic(id,add_time,period,station_num,pc)
+        VALUES
+            (NULL ,now(),DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H'),#{station_num},
+                SELECT(
+                    (SELECT ammeter from point_ammeter where station_num=#{station_num} and time=
+                        (SELECT MAX(time) FROM point_ammeter WHERE station_num=#{station_num} and time &lt;= DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H'))
+                    )-
+                    (SELECT ammeter from point_ammeter where station_num=#{station_num} and time=
+                        (SELECT MIN(time) FROM point_ammeter WHERE station_num=#{station_num} and time &lt;= DATE_FORMAT(NOW(),'%Y-%m-%d %H'))
+                    )
+                )
+            )
+    </insert>
+
+    <!-- 查询电表站点号-->
+    <select id="select_ammeter" resultType="int">
+        SELECT DISTINCT station_num FROM aci
+    </select>
+
+    <select id="statisticByHour" resultType="Map">
+        SELECT pc,period,station_num
+        FROM power_statistic
+        WHERE period BETWEEN #{begin_time} and #{end_time}
+        ORDER BY station_num,period
+    </select>
+    
+    <![CDATA[
+    <!-- 统计主机上一小时耗电量,参数为设备编号device_num -->
+    <insert id="statistics_chiller" parameterType="int">
+        INSERT INTO cspc(device_num,add_time,time,pc)
+        VALUES
+            (#{device_num},now(),DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H'),
+                SELECT(
+                    (SELECT ammeter from chiller where time=
+                        (SELECT MAX(time) FROM chiller WHERE device_num=#{device_num} and time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H') AND  DATE_FORMAT(NOW(),'%Y-%m-%d %H'))
+                    )-
+                    (SELECT ammeter from chiller where time=
+                        (SELECT MIN(time) FROM chiller WHERE device_num=#{device_num} and time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H') AND  DATE_FORMAT(NOW(),'%Y-%m-%d %H'))
+                    )
+                )
+            )
+    </insert>
+
+    <!-- 统计冷却塔上一小时耗电量,参数为设备编号device_num -->
+    <insert id="statistics_cooling_tower" parameterType="int">
+        INSERT INTO cspc(device_num,add_time,time,pc)
+        VALUES
+            (#{device_num},now(),DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H'),
+                SELECT(
+                    (SELECT ammeter from cooling_tower where time=
+                        (SELECT MAX(time) FROM cooling_tower WHERE device_num=#{device_num} and time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H') AND  DATE_FORMAT(NOW(),'%Y-%m-%d %H'))
+                    )-
+                    (SELECT ammeter from cooling_tower where time=
+                        (SELECT MIN(time) FROM cooling_tower WHERE device_num=#{device_num} and time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H') AND  DATE_FORMAT(NOW(),'%Y-%m-%d %H'))
+                    )
+                )
+            )
+    </insert>
+
+    <!-- 统计冷冻泵上一小时耗电量,参数为设备编号device_num -->
+    <insert id="statistics_freezing_pump" parameterType="int">
+        INSERT INTO cspc(device_num,add_time,time,pc)
+        VALUES
+            (#{device_num},now(),DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H'),
+                SELECT(
+                    (SELECT ammeter from freezing_pump where time=
+                        (SELECT MAX(time) FROM freezing_pump WHERE device_num=#{device_num} and time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H') AND  DATE_FORMAT(NOW(),'%Y-%m-%d %H'))
+                    )-
+                    (SELECT ammeter from freezing_pump where time=
+                        (SELECT MIN(time) FROM freezing_pump WHERE device_num=#{device_num} and time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H') AND  DATE_FORMAT(NOW(),'%Y-%m-%d %H'))
+                    )
+                )
+            )
+    </insert>
+
+    <!-- 统计冷却泵上一小时耗电量,参数为设备编号device_num -->
+    <insert id="statistics_cooling_pump" parameterType="int">
+        INSERT INTO cspc(device_num,add_time,time,pc)
+        VALUES
+            (#{device_num},now(),DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H'),
+                SELECT(
+                    (SELECT ammeter from cooling_pump where time=
+                        (SELECT MAX(time) FROM cooling_pump WHERE device_num=#{device_num} and time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H') AND  DATE_FORMAT(NOW(),'%Y-%m-%d %H'))
+                    )-
+                    (SELECT ammeter from cooling_pump where time=
+                        (SELECT MIN(time) FROM cooling_pump WHERE device_num=#{device_num} and time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H') AND  DATE_FORMAT(NOW(),'%Y-%m-%d %H'))
+                    )
+                )
+            )
+    </insert>
+
+    <!-- 统计阀/开关上一小时耗电量,参数为设备编号device_num -->
+    <insert id="statistics_valve" parameterType="int">
+        INSERT INTO cspc(device_num,add_time,time,pc)
+        VALUES
+            (#{device_num},now(),DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H'),
+                SELECT(
+                    (SELECT ammeter from valve where time=
+                        (SELECT MAX(time) FROM valve WHERE device_num=#{device_num} and time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H') AND  DATE_FORMAT(NOW(),'%Y-%m-%d %H'))
+                    )-
+                    (SELECT ammeter from valve where time=
+                        (SELECT MIN(time) FROM valve WHERE device_num=#{device_num} and time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H') AND  DATE_FORMAT(NOW(),'%Y-%m-%d %H'))
+                    )
+                )
+            )
+    </insert>
+
+    <!-- 统计空调机上一小时耗电量,参数为设备编号device_num -->
+    <insert id="statistics_ace" parameterType="int">
+        INSERT INTO actpc(device_num,add_time,time,pc)
+        VALUES
+            (#{device_num},now(),DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H'),
+                SELECT(
+                    (SELECT ammeter from ace where time=
+                        (SELECT MAX(time) FROM ace WHERE device_num=#{device_num} and time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H') AND  DATE_FORMAT(NOW(),'%Y-%m-%d %H'))
+                    )-
+                    (SELECT ammeter from ace where time=
+                        (SELECT MIN(time) FROM ace WHERE device_num=#{device_num} and time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H') AND  DATE_FORMAT(NOW(),'%Y-%m-%d %H'))
+                    )
+                )
+            )
+    </insert>
+
+    <!-- 统计风机上一小时耗电量,参数为设备编号device_num -->
+    <insert id="statistics_fan" parameterType="int">
+        INSERT INTO actpc(device_num,add_time,time,pc)
+        VALUES
+            (#{device_num},now(),DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H'),
+                SELECT(
+                    (SELECT ammeter from fan where time=
+                        (SELECT MAX(time) FROM fan WHERE device_num=#{device_num} and time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H') AND  DATE_FORMAT(NOW(),'%Y-%m-%d %H'))
+                    )-
+                    (SELECT ammeter from fan where time=
+                        (SELECT MIN(time) FROM fan WHERE device_num=#{device_num} and time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H') AND  DATE_FORMAT(NOW(),'%Y-%m-%d %H'))
+                    )
+                )
+            )
+    </insert>
+
+    <!-- 统计风机盘管上一小时耗电量,参数为设备编号device_num -->
+    <insert id="statistics_fan_coil" parameterType="int">
+        INSERT INTO actpc(device_num,add_time,time,pc)
+        VALUES
+            (#{device_num},now(),DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H'),
+                SELECT(
+                    (SELECT ammeter from fan_coil where time=
+                        (SELECT MAX(time) FROM fan_coil WHERE device_num=#{device_num} and time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H') AND  DATE_FORMAT(NOW(),'%Y-%m-%d %H'))
+                    )-
+                    (SELECT ammeter from fan_coil where time=
+                        (SELECT MIN(time) FROM fan_coil WHERE device_num=#{device_num} and time BETWEEN DATE_FORMAT(DATE_SUB(NOW(),INTERVAL 1 HOUR),'%Y-%m-%d %H') AND  DATE_FORMAT(NOW(),'%Y-%m-%d %H'))
+                    )
+                )
+            )
+    </insert>
+    ]]>
+
+</mapper>

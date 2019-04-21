@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.imec.central.components.collection.mapper.PowTempDataMapper">
+    <resultMap id="gateWayMap" type="com.imec.central.components.collection.pojo.GateWay">
+        <result property="type" column="type"/>
+        <result property="ip" column="ip"/>
+        <result property="port" column="port"/>
+    </resultMap>
+
+    <resultMap id="stationInfoData" type="com.imec.central.components.collection.pojo.Station">
+        <result property="station" column="station_num"/>
+        <result property="meterName" column="ammeter_name"/>
+    </resultMap>
+
+
+    <select id="getGateWay" parameterType="String" resultMap="gateWayMap">
+        SELECT *
+          FROM gateway_info
+        WHERE type =#{type}
+    </select>
+
+    <insert id="saveTemp" parameterType="Map">
+        INSERT INTO
+          point_temp
+        VALUES
+          (null,null ,#{659},#{1A0},#{631},#{2FA},#{47F},#{655},#{63E},#{94B},#{5C1},#{5F3},#{3E4},#{629},#{657},#{660},#{3F4},#{3AF},#{647},#{6B2}
+              ,#{2F9},#{6D0},#{99C},#{55F},#{685},#{17C},#{6CA},#{579},#{652},#{98F},#{66B})
+    </insert>
+
+    <select id="queryTempData" resultType="Map">
+        SELECT * from point_temp ORDER BY insert_time DESC  limit 1
+    </select>
+
+    <select id="getEUI" parameterType="int" resultType="String">
+        SELECT eui_value FROM eui WHERE floor=#{floor}
+    </select>
+    <select id="getAllStation" resultMap="stationInfoData">
+        SELECT
+           station_num,ammeter_name
+        FROM
+          aci
+    </select>
+
+    <insert id="savePow" parameterType="map">
+        INSERT INTO
+          energy_used
+        VALUES
+          (null,null,#{main_pow_spuuly1},#{main_pow_spuuly2},#{chiller_pow},#{win_pow},#{freeze_pow1},#{freeze_pow2},#{vrv_pow},#{pump_pow1}
+               ,#{pump_pow2},#{tower_pow},#{light_pow},#{special_pow},#{coil_pow},#{wind_cabinet_pow},#{split_ac_pow},#{spare})
+    </insert>
+</mapper>

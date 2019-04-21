@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.imec.central.components.runmgr.mapper.PlcRunLogMapper">
+    <!-- 自定义数据容器返回的bean -->
+    <resultMap type="com.imec.central.components.runmgr.pojo.PlcRunLog"
+               id="plcRunLogList">
+        <result property="Id" column="Id" />
+        <result property="configId" column="configId" />
+        <result property="configName" column="Name" />
+        <result property="data" column="data" />
+        <result property="readTime" column="readTime" />
+    </resultMap>
+
+    <select id="getPlcRunlogInfo" parameterType="com.imec.central.api.parameters.EcParameter"
+            resultMap="plcRunLogList">
+        SELECT p.Id,p.configId,c.`Name` as 'configName',p.`data`,p.readTime
+        FROM ${dataTable} p LEFT JOIN `plc_run_log_config` c ON p.configId=c.Id
+        where readTime BETWEEN #{startDate} AND #{endDate}
+    </select>
+
+    <select id="getDeviceOptLog" parameterType="com.imec.central.api.parameters.EcParameter"
+            resultType="com.imec.central.components.runmgr.pojo.DeviceOptLog">
+        select * from device_optlog WHERE buildId=#{key} AND
+        OptTime between #{startDate} AND #{endDate} ORDER BY OptTime Desc limit #{limit},#{offset}
+    </select>
+
+    <select id="getDeviceAlarmLog" parameterType="com.imec.central.api.parameters.EcParameter"
+            resultType="com.imec.central.components.runmgr.pojo.DeviceAlarmLog">
+        select * from device_alarmlog WHERE buildId=#{key} AND ${sWhere}
+        between #{startDate} AND #{endDate} ORDER BY AlarmTime Desc limit #{limit},#{offset}
+    </select>
+
+    <select id="getOptLog" parameterType="com.imec.central.api.parameters.EcParameter"
+            resultType="com.imec.central.components.runmgr.pojo.OptLog">
+        select * from optlog WHERE RecordTime between #{startDate} AND #{endDate}
+        ORDER BY RecordTime Desc limit #{limit},#{offset}
+    </select>
+
+    <select id="getBuildInfo"
+            resultType="com.imec.central.components.runmgr.pojo.BuildInfo">
+        select * from build_info
+    </select>
+
+    <select id="getDeviceInfo"
+            resultType="com.imec.central.components.runmgr.pojo.DeviceInfo">
+        select * from device_info ORDER BY DeviceType,DeviceName
+    </select>
+
+    <select id="clearRunNum" parameterType="int">
+        update device_info set UsedNum=0 where Id=#{deviceId}
+    </select>
+
+    <select id="clearRunTime" parameterType="int">
+        update device_info set UsedTime=0 where Id=#{deviceId}
+    </select>
+</mapper>

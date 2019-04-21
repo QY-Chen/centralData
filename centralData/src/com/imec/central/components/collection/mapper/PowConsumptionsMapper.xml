@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.imec.central.components.collection.mapper.PowConsumptionsMapper">
+
+
+    <resultMap id="powConsumptions" type="com.imec.central.components.collection.pojo.PowConsumptions">
+        <result property="id"/>
+        <result property="num"/>
+        <result property="type"/>
+        <result property="name"/>
+        <result property="value"/>
+        <result property="time"/>
+    </resultMap>
+
+    <insert id="addLightSocketPC" parameterType="com.imec.central.components.collection.pojo.PowConsumptions">
+        INSERT INTO
+          lspc_hourdata(lspc_type,lspc_num,lspc_value,lspc_name)
+        VALUES
+          (#{type},#{num},#{value},#{name});
+    </insert>
+
+    <insert id="addOthersPC" parameterType="com.imec.central.components.collection.pojo.PowConsumptions">
+        INSERT  INTO
+          oipc_hourdata(oipc_type,oipc_num,oipc_name,oipc_data)
+        VALUES
+          (#{type},#{num},#{name},#{value});
+    </insert>
+</mapper>

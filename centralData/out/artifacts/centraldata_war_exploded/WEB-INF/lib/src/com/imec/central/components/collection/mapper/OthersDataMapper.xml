@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.imec.central.components.collection.mapper.OthersDataMapper">
+    <resultMap id="otherData" type="com.imec.central.components.collection.pojo.OthersData">
+
+    </resultMap>
+
+    <insert id="addOthersData" parameterType="Map">
+       INSERT INTO
+          others(total_cooling_time,cool_flow,freez_flow,tenmin_average_flow,tenmin_average_power,freez_supply_water_temp,freez_rtn_water_temp,
+                 cool_supply_water_temp,cool_rtn_water_temp,outside_temp_num1,outside_humi_num1,freez_water_diff,cool_water_diff)
+       VALUES (#{totalCooltime},#{coolWaterFlow},#{freezWaterFlow},#{averageFlowInTenMin},#{averagePowerInTenMin},#{freezWaterSupplyTemp},#{freezWaterRtnTemp}
+              ,#{coolWaterSuplyTemp},#{coolWaterRtnTemp},#{outsideTemp},#{outsideHumi},#{freezWaterDiff},#{coolWaterDiff})
+    </insert>
+
+    <select id="queryOthersData" parameterType="String">
+       SELECT * FROM
+        others
+      WHERE
+        insert_time = (SELECT max(insert_time) FROM others)
+    </select>
+</mapper>

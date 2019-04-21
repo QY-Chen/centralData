@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+	http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-4.1.xsd">
+
+	<!--<import resource="spring-security.xml" />  -->
+
+
+	<bean
+		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="order" value="1" />
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+		<property name="location" value="classpath:global-config-file.properties" />
+	</bean>
+
+	<bean id="myBatisDataSource" class="com.imec.central.util.CentBasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="${jdbc.dataSource.driver}">
+		</property>
+		<property name="url" value="${jdbc.dataSource.url}">
+		</property>
+		<property name="username" value="${jdbc.dataSource.username}"></property>
+		<property name="password" value="${jdbc.dataSource.password}"></property>
+	</bean>
+
+	<!-- * myBatis的Mapper自动扫描配置 * ============================ * 此配置将默认扫描basePackage下的所有继承BEMSMapper的接口 -->
+	<bean id="mapperScanner" class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+		<!-- 默认扫描basePackage下的所有继承BEMSMapper的接口 -->
+		<property name="basePackage">
+			<value>com.imec.central</value>
+		</property>
+		<!-- mybatis自动Mapper扫描父接口-->
+		 <property name="annotationClass" 
+           value="com.imec.central.api.mapper.BaseMapper"/>
+		<!-- <property name="markerInterface">
+			<value>com.imec.nsgov.api.mapper.NSGOVMapper</value>
+		</property> -->
+		<!-- 默认SqlSessionFactory的名称为sqlSessionFactory -->
+		<!-- <property name="sqlSessionFactory"> <value></value> </property> -->
+	</bean>
+
+	<!-- Service Bean -->
+	<context:component-scan base-package="com.imec.central.components">
+		<context:exclude-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+
+	<!-- (事务管理)transaction manager, use JtaTransactionManager for global tx -->
+	<bean id="transactionManager"
+		class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+		<property name="dataSource" ref="myBatisDataSource" />
+	</bean>
+
+	<!-- MyBatis的SQLSessionFactory工厂类 -->
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="myBatisDataSource"></property>
+		<property name="configLocation">
+			<value>classpath:mybatis.xml</value>
+		</property>
+	</bean>
+
+	<!-- 配置TimerTask bean -->
+	<!--<bean id="TimerTask" class="com.imec.central.api.timerTask.GetWeather"></bean>-->
+	<!--<bean id="scheduledInfo"-->
+		<!--class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">-->
+
+		<!--<property name="targetObject">-->
+			<!--<ref bean="TimerTask" />-->
+		<!--</property>-->
+		<!--<property name="targetMethod">-->
+			<!--<value>execute</value>-->
+		<!--</property>-->
+
+	<!--</bean>-->
+
+
+	<!-- org.springframework.scheduling.quartz.CronTriggerBean 改为如下。因为3.1版本改为如下的类 -->
+	<!-- spring3.0 内置的是quartz 2.0以下版本 -->
+	<!--<bean id="cronInfoTrigger"-->
+		<!--class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">-->
+		<!--<property name="jobDetail">-->
+			<!--<ref bean="scheduledInfo" />-->
+		<!--</property>-->
+		<!--&lt;!&ndash; 秒 分 时 日 月 day-of-week year （*通配符， \，表示多项 ？表示不想设置的字段） &ndash;&gt;-->
+		<!--<property name="cronExpression">-->
+			<!--<value>1 0,15,30,45 * * * ?</value>-->
+			<!--&lt;!&ndash; <value>0/5 * * * * ?</value> &ndash;&gt;-->
+		<!--</property>-->
+	<!--</bean>-->
+
+	<!-- 最终启动的配置 -->
+	<!--<bean id="startQuertz" lazy-init="false" autowire="no"-->
+		<!--class="org.springframework.scheduling.quartz.SchedulerFactoryBean">-->
+		<!--<property name="triggers">-->
+			<!--<list>-->
+				<!--<ref bean="cronInfoTrigger" />-->
+			<!--</list>-->
+		<!--</property>-->
+	<!--</bean>-->
+</beans>

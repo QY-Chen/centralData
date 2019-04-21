@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.imec.central.components.admin.mapper.UserMapper">
+	<!-- 自定义数据容器返回的bean -->
+	<resultMap type="com.imec.central.components.admin.pojo.User"
+		id="userList">
+		<result property="id" />
+		<result property="rid" />
+		<result property="name" />
+		<result property="pass" />
+		<result property="rname" />
+		<result property="remark" />
+	</resultMap>
+	<!-- 权限映射配置 -->
+	<resultMap type="com.imec.central.components.admin.pojo.Privilege"
+		id="privilegeList">
+		<result property="id" />
+		<result property="name" />
+		<result property="url" />
+		<result property="systemName" />
+		<result property="detail" />
+		<result property="pid"/>
+	</resultMap>
+	<select id="selectEntity" parameterType="java.lang.String"
+		resultMap="userList">
+		SELECT a.id as id,a.name as name,a.login as login,a.pass as
+		pass,r.id as
+		rid,r.name as rname,a.remark as remark from t_account
+		a,t_role r,t_account_role ar where
+		a.id=ar.account_id and
+		r.id=ar.role_id
+	</select>
+	<select id="selectSingleEntity" parameterType="java.lang.String" resultMap="userList">
+		SELECT a.id as id,a.name as name,a.login as login,a.pass as
+		pass,a.remark as remark,r.id as rid,r.name as rname 
+		FROM t_account a
+		LEFT JOIN
+		t_account_role ar
+		ON a.id = ar.account_id
+		LEFT JOIN t_role r
+		ON ar.role_id = r.id
+		WHERE a.id = #{id}
+	</select>
+	<!-- 增加用户 -->
+	<insert id="addEntity" parameterType="com.imec.central.components.admin.pojo.User">
+		insert into
+		t_account(name,login,pass,remark)
+		values(#{name},#{login},#{pass},#{remark})
+	</insert>
+	<!-- 查询当前新增用户的编号 -->
+	<select id="getMaxId" resultType="int">
+		select MAX(id) from t_account
+	</select>
+	<!--插入中间关系表 -->
+	<insert id="addAccount_Role" parameterType="map">
+		insert into
+		t_account_role(account_id,role_id)
+		values(#{account_id},#{role_id});
+	</insert>
+
+	<!-- 删除用户 -->
+	<delete id="deleteUserById" parameterType="int">
+		DELETE FROM t_account
+		where id=#{id}
+	</delete>
+	<!-- 删除该用户的所拥有的角色 -->
+	<delete id="deleteUserJoinRole" parameterType="int">
+		DELETE from
+		t_account_role WHERE account_id=#{id}
+	</delete>
+	<!-- 更新用户密码 -->
+	<update id="updatePassWord" parameterType="com.imec.central.components.admin.pojo.User">
+		update t_account set
+		pass=#{pass} where id=#{id}
+	</update>
+	<!-- 更新用户描述 -->
+	<update id="updateRemark" parameterType="com.imec.central.components.admin.pojo.User">
+		update t_account set
+		remark=#{remark} where id=#{id}
+	</update>
+	<!-- 更新用户的角色编号 -->
+	<update id="updateRoleId" parameterType="com.imec.central.components.admin.pojo.User">
+		update t_account_role
+		set role_id=#{rid} where account_id=#{id}
+	</update>
+	<!-- 获取登录用户 -->
+	<select id="getLoginUser" parameterType="map"
+		resultType="com.imec.central.components.admin.pojo.User">
+		SELECT
+		id FROM t_account WHERE name=#{name} AND pass=#{pass}
+	</select>
+	<!-- 获取所有的权限信息 -->
+	<select id="loadAllPrivilege" resultMap="privilegeList">
+		SELECT
+		id,name,url,detail FROM t_privilege
+	</select>
+	<!-- 获取当前登录用户所拥有的权限 -->
+	<select id="loadLoginPrivilege" parameterType="int" resultMap="privilegeList">
+		SELECT id,name,url,detail,t.pid,t.order AS orderBy FROM t_privilege t WHERE id IN(SELECT
+		privilege_id FROM t_role_privilege WHERE role_id IN(SELECT role_id
+		from t_account_role WHERE account_id=#{account_id}))
+		ORDER BY t.order
+	</select>
+</mapper>

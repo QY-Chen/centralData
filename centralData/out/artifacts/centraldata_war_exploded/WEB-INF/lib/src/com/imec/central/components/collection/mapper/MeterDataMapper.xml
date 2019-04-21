@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.imec.central.components.collection.mapper.MeterDataMapper">
+
+    <insert id="addMeterData" parameterType="Map">
+        INSERT INTO point_ammeter(id,station_num,ammeter,time)
+        VALUES (NULL ,#{station_num},#{ammeter},now())
+    </insert>
+</mapper>

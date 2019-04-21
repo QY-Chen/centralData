@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.imec.central.components.collection.mapper.ValveMapper">
+
+
+    <resultMap id="valueData" type="com.imec.central.components.collection.pojo.ValveData">
+
+    </resultMap>
+
+    <insert id="addValveData" parameterType="Map">
+        INSERT INTO
+          valve()
+        VALUES (null,null,#{status},#{valveOn},#{valveOff},#{elecValveFail},#{freezFlowSwitch},#{freezSwitchFail},#{coolFlowSwitch},#{coolSwitchFail})
+
+    </insert>
+
+    <select id="queryValveData" parameterType="int" resultType="Map">
+        SELECT * FROM valve WHERE id=#{id} ORDER BY insert_time DESC limit 1
+    </select>
+
+
+
+</mapper>

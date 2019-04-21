@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.imec.central.components.collection.mapper.CoolingPumpDataMapper">
+
+    <resultMap id="coolingPump" type="com.imec.central.components.collection.pojo.CoolingPumpData">
+        <result property="id" column="cp_info_id"/>
+        <result property="status" column="cp_status"/>
+        <result property="num" column="cp_num"/>
+        <result property="frequencyStatus" column="cp_work_frequency_status"/>
+        <result property="frequencyAlert" column="cp_work_frequency_alert"/>
+        <result property="contactorStatus" column="cp_contactor_status"/>
+        <result property="inverterStatus" column="cp_inverter_status"/>
+        <result property="inverterAlert" column="cp_inverter_alert"/>
+        <result property="inverterAdjust" column="cp_inverter_adjust"/>
+        <result property="inverterPowFeed" column="cp_inverter_power_feedback"/>
+        <result property="startFailed" column="cp_starting_failed"/>
+        <result property="supplyTemp" column="cp_supply_chi_water_temp"/>
+        <result property="returnTemp" column="cp_return_chi_water_temp"/>
+        <result property="waterFlow" column="cp_water_flow"/>
+        <result property="time" column="cp_info_add_time"/>
+        <result property="waterPressure" column="cp_chi_water_pressure"/>
+        <result property="pumpPressure" column="cp_pump_pressure"/>
+        <result property="ammeter" column="cp_ammeter"/>
+    </resultMap>
+
+    <insert id="addCoolPumpData" parameterType="java.util.Map">
+       INSERT  INTO
+         cooling_pump(id,time,device_num,frequency_status,frequency_alert,contactor_status,inverter_status,inverter_alert,inverter_feedback,start_fail,supply_temp,return_temp,water_pressure_diff,pump_pressure_diff,ammeter,status,inverter_adjust)
+        VALUE (NULL ,now(),#{deviceNum},#{runStatus},#{frequencyAlert},#{contactorStatus},#{inverterStatus},#{inverterAlert},#{inverterFeedback},#{startFail},NULL ,NULL ,NULL ,#{pressureDiff} ,NULL ,#{status},#{inverterAdjust})
+    </insert>
+
+    <select id="queryCoolPumpById" parameterType="int" resultType="java.util.Map">
+        SELECT id,time,devince_num,frequency_status,frequency_alert,contactor_status,inverter_status,inverter_alert,inverter_feedback,start_fail,supply_temp,return_temp,water_pressure_diff,pump_pressure_diff,ammeter,status,inverter_adjust
+        FROM  cooling_pump
+        WHERE device_num=#{num}
+        AND
+        time =(SELECT max(time) FROM chiller WHERE device_num=#{num})
+    </select>
+
+</mapper>

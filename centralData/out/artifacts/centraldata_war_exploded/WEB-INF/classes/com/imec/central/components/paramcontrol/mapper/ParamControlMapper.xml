@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.imec.central.components.paramcontrol.mapper.ParamControlMapper">
+
+    <resultMap id="paramControl" type="com.imec.central.components.paramcontrol.pojo.ControlParam">
+        <result property="id" column="pc_id"/>
+        <result property="num" column="pc_num"/>
+        <result property="value" column="pc_value"/>
+        <result property="name" column="pc_name"/>
+    </resultMap>
+
+    <insert id="paramContrallor" parameterType="com.imec.central.components.paramcontrol.pojo.ControlParam">
+        INSERT INTO
+        param_control()
+        VALUES
+        ();
+    </insert>
+</mapper>

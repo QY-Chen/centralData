@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.imec.central.components.collection.mapper.CoolingTowerDataMapper">
+
+    <resultMap id="coolingTower" type="com.imec.central.components.collection.pojo.CoolingTowerData">
+        <result property="id"/>
+        <result property="status"/>
+        <result property="num"/>
+        <result property="frequencyStatus"/>
+        <result property="frequencyAlert"/>
+        <result property="contactorStatus"/>
+        <result property="inverterStatus"/>
+        <result property="inverterAlert"/>
+        <result property="inverterAdjust"/>
+        <result property="inverterPowFeed"/>
+        <result property="startFailed"/>
+        <result property="ammeter"/>
+        <result property="addTime"/>
+    </resultMap>
+    <insert id="addCoolTowerData" parameterType="Map">
+        INSERT INTO
+        cooling_tower(id,time,device_num,frequency_status,frequency_alert,contactor_status,inverter_status,inverter_alert,inverter_feedback,start_fail,ammeter,inverter_adjust,status)
+        VALUES
+        (NULL ,now() ,#{deviceNum},#{runStatus},#{frequencyAlert},#{contactorStatus},#{inverterStatus},#{inverterAlert},#{inverterFeedback},#{startFail},NULL ,#{inverterAdjust},#{status})
+        </insert>
+
+    <select id="queryCoolTowerById" resultType="Map" parameterType="int">
+        SELECT id,time,device_num,frequency_status,frequency_alert,contactor_status,inverter_status,inverter_alert,inverter_feedback,start_fail,ammeter,inverter_adjust,status
+        FROM cooling_tower
+        WHERE device_num=#{num}
+        AND
+        time =(SELECT max(time) FROM chiller WHERE device_num=#{num})
+    </select>
+
+</mapper>

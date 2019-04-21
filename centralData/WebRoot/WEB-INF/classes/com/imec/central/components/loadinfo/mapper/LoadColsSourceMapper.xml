@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.imec.central.components.loadinfo.mapper.LoadColsSourceMapper">
+
+    <resultMap id="loadColdSourceData" type="com.imec.central.components.loadinfo.pojo.DisplayCsData">
+        <result property="ctStatus"/>
+        <result property="chiStatus"/>
+        <result property="fpStatus"/>
+        <result property="cpStatus"/>
+        <result property="ctsupplyTemp"/>
+        <result property="ctReturnTemp"/>
+        <result property="chiSupplyTemp"/>
+        <result property="chiReturnTemp"/>
+        <result property="fpSupplyTemp"/>
+        <result property="fpReturnTemp"/>
+        <result property="cpSupplyTemp"/>
+        <result property="cpReturnTemp"/>
+    </resultMap>
+
+    <resultMap id="loadAcTerminalData" type="com.imec.central.components.loadinfo.pojo.DisplayAcTerminalData">
+
+    </resultMap>
+
+    <select id="laodColdSourcedata" parameterType="map" resultMap="loadColdSourceData">
+        SELECT
+
+        FROM
+          chiller a,freezing_pump b,cooling_pump c,cooling_tower d
+        WHERE
+          chi_info_add_time = (SELECT MAX(chi_info_add_time) FROM chiller)
+        AND
+          cp_info_add_time = (SELECT MAX(cp_info_add_time) FROM cooling_pump)
+        AND
+          ct_info_add_time = (SELECT MAX(ct_info_add_time) FROM coling_tower)
+        AND
+          fp_info_add_time = (SELECT MAX(fp_info_add_time) FROM freezing_pump)
+        AND
+          cp_num=#{cpNum}
+        AND
+          fp_num=#{fpNum}
+        AND
+          ct_num=#{ctNum};
+    </select>
+
+    <select id="loadChidate" parameterType="int" resultType="java.util.HashMap">
+        SELECT
+          chi_info_num chiNum,
+          chi_status chiStatus,
+          chi_running_current chiCurrent,
+          chi_load_rating chiLoadRate,
+          chi_supply_water_temp chiSupplyTemp,
+          chi_return_water_temp chiReturnTemp,
+          chi_supply_cooling-water_temp chiSupplyCoolTemp,
+          chi_return_cooling_water_temp chiReturnCoolTemp,
+          chi_evaporating_temp chiEvaporatingTemp,
+          chi_evaporating_pressure chiEvaporatingPress,
+          chi_condensing_temp chiCondensingTemp,
+          chi_condensing_pressure chiCondensingPress,
+          chi_failure_indication chiFail,
+          chi_starting_failed chiStartFail;
+        FROM
+          chiller
+        WHERE
+          chi_info_num=#{num}
+        AND
+          chi_info_add_time=(SELECT MAX(chi_info_add_time) FROM chiller WHERE chi_info_num=#{num})
+    </select>
+
+    <select id="loadCtdate" parameterType="int" resultType="java.util.HashMap">
+        SELECT
+
+    </select>
+  <!--  <select id="loadAcTerminalData" parameterType="map" resultMap="loadActerminalData">
+
+    </select>-->
+
+</mapper>

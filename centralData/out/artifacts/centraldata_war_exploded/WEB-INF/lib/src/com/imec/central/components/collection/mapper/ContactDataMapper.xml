@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+        <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.imec.central.components.collection.mapper.ContactDataMapper">
+
+    <resultMap id="contactDataResult" type="com.imec.central.components.collection.pojo.ContactData">
+        <result property="pointNum" column="point_num"/>
+        <result property="type" column="point_type"/>
+        <result property="name" column="name"/>
+        <result property="deviceNum" column="device_num"/>
+    </resultMap>
+
+    <resultMap id="jsonPointresult" type="com.imec.central.components.collection.pojo.PointList">
+        <result property="type" column="point_type" jdbcType="VARCHAR"/>
+        <result property="point" column="device_num" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <resultMap id="pointNum" type="com.imec.central.components.collection.pojo.AllPointList">
+        <result property="num" column="point_num" jdbcType="VARCHAR"/>
+        <result property="point" column="device_num" jdbcType="VARCHAR"/>
+    </resultMap>
+
+    <select id="getPoint" resultMap="contactDataResult">
+        SELECT
+        *
+        FROM
+        resource_point_info
+    </select>
+
+    <select id="getNeededPoint" parameterType="map" resultMap="contactDataResult">
+          SELECT
+              *
+          FROM
+              resource_point_info
+          WHERE
+              point_num
+          BETWEEN
+              #{startNum}
+          AND
+             #{endNum}
+    </select>
+
+    <select id="getJsonPoint" parameterType="map" resultMap="jsonPointresult">
+        SELECT
+          point_type,device_num
+        FROM
+           resource_point_info
+        WHERE
+          point_num
+        BETWEEN
+           #{startNum}
+        AND
+           #{endNum}
+    </select>
+
+    <select id="getAllJsonPoint" resultMap="jsonPointresult">
+         SELECT
+          point_type,device_num
+        FROM
+           resource_point_info
+    </select>
+
+    <select id="getPointNum" resultMap="pointNum">
+        SELECT
+        point_num,device_num
+        FROM
+        resource_point_info
+    </select>
+
+
+</mapper>

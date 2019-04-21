@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.imec.central.components.collection.mapper.ChillerDataMapper">
+
+    <resultMap id="chillerDataMap" type="com.imec.central.components.collection.pojo.ChillerData">
+        <result property="id"/>
+        <result property="status"/>
+        <result property="num"/>
+        <result property="runningStatus"/>
+        <result property="failureIndication"/>
+        <result property="startFailed"/>
+        <result property="supplyTemp"/>
+        <result property="returnTemp"/>
+        <result property="loadRate"/>
+        <result property="runningCurrent"/>
+        <result property="supplyCoolingTemp"/>
+        <result property="returnCoolingTemp"/>
+        <result property="evaporatePressure"/>
+        <result property="evaporateTemp"/>
+        <result property="condensingPressure"/>
+        <result property="condensingTemp"/>
+        <result property="ammeter"/>
+        <result property="time"/>
+    </resultMap>
+
+    <insert id="addChillerData" parameterType="Map">
+        INSERT INTO chiller(id,fail_indication,start_fail,load_rate,running_current,freez_supply_temp,freez_return_temp,cool_supply_temp,cool_return_temp,evaporate_pressure,evaporate_temp,condenstate_pressure,condenstate_temp,ammeter,time,status,device_num,running_status,temp_set)
+        VALUES (NULL ,#{failindicant},#{startFail},NULL ,NULL ,#{freezeSupplyTemp},#{freezeReturnTemp},NULL ,NULL ,NULL ,NULL ,NULL ,NULL ,NULL ,now(),#{status},#{deviceNum},#{runStatus},#{tempSet})
+    </insert>
+    
+        <select id="queryChillerData" resultType="Map" parameterType="int">
+        SELECT id,fail_indication,start_fail,load_rate,running_current,freez_supply_temp,freez_return_temp,cool_supply_temp,cool_return_temp,evaporate_pressure,evaporate_temp,condenstate_pressure,condenstate_temp,ammeter,status,device_num,running_status,temp_set,time
+        FROM chiller
+        where device_num=#{num}
+        AND
+        time =(SELECT max(time) FROM chiller WHERE device_num=#{num})
+    </select>
+    
+
+</mapper>

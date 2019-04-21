@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.imec.central.components.device.mapper.DeviceAlarmLogMapper">
+	
+	<resultMap type="com.imec.central.components.device.mapper.pojo.DeviceAlarmlog"
+		id="device_alarmlogResult">
+		<result property="Id" column="Id"/>
+		<result property="deviceId" column="deviceId"/>
+		<result property="deviceName" column="deviceName"/>
+		<result property="alarmTime" column="alarmTime"/>
+		<result property="alarmRelTime" column="alarmRelTime"/>
+		<result property="alarmNum" column="alarmNum"/>
+		<result property="buildId" column="buildId"/>
+	</resultMap>
+
+	<parameterMap id="device_alarmlogParam"
+		type="com.imec.central.components.device.mapper.pojo.DeviceAlarmlog">
+		<parameter property="Id" jdbcType="INTEGER" />
+		<parameter property="deviceId" jdbcType="INTEGER" />
+		<parameter property="deviceName" jdbcType="VARCHAR" />
+		<parameter property="alarmTime" jdbcType="DATE" />
+		<parameter property="alarmRelTime" jdbcType="DATE" />
+		<parameter property="alarmNum" jdbcType="INTEGER" />
+		<parameter property="buildId" jdbcType="INTEGER" />
+	</parameterMap>
+
+	<select id="loadAllAlarmLogByDeviceId" resultMap="device_alarmlogResult" parameterMap="device_alarmlogParam">
+		SELECT 
+			Id,deviceId,deviceName,alarmTime,alarmRelTime,alarmNum,buildId
+		FROM 
+			zigbeedata.device_alarmlog
+		WHERE 
+			deviceId = #{deviceId}
+	</select>
+
+
+	<select id="loadAllAlarmLogByDeviceIds" resultMap="device_alarmlogResult" parameterType="List">
+		SELECT 
+			Id,deviceId,deviceName,alarmTime,alarmRelTime,alarmNum,buildId
+		FROM 
+			zigbeedata.device_alarmlog
+		WHERE 
+			deviceId IN
+		<foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+	</select>
+
+	<select id="loadAlarmLogById" resultMap="device_alarmlogResult" parameterMap="device_alarmlogParam">
+		SELECT 
+			Id,deviceId,deviceName,alarmTime,alarmRelTime,alarmNum,buildId
+		FROM 
+			zigbeedata.device_alarmlog
+		WHERE 
+			Id = #{Id}
+	</select>
+	<select id="loadAlarmingLogByDeviceId" resultMap="device_alarmlogResult" parameterMap="device_alarmlogParam">
+		SELECT 
+			Id,deviceId,deviceName,alarmTime,alarmRelTime,alarmNum,buildId
+		FROM 
+			zigbeedata.device_alarmlog
+		WHERE 
+			deviceId = #{deviceId} AND alarmRelTime IS NULL
+	</select>
+	<select id="loadAlarmingLogByDeviceIds" resultMap="device_alarmlogResult" parameterType="List">
+		SELECT 
+			Id,deviceId,deviceName,alarmTime,alarmRelTime,alarmNum,buildId
+		FROM 
+			zigbeedata.device_alarmlog
+		WHERE 
+			alarmRelTime IS NULL AND deviceId IN
+		<foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+	</select>
+
+	<select id="loadAlarmLogHistoryByDeviceId" resultMap="device_alarmlogResult" parameterMap="device_alarmlogParam">
+		SELECT 
+			Id,deviceId,deviceName,alarmTime,alarmRelTime,alarmNum,buildId
+		FROM 
+			zigbeedata.device_alarmlog
+		WHERE 
+			deviceId = #{deviceId} AND alarmRelTime IS NOT NULL
+	</select>
+	<select id="loadAlarmLogHistoryByDeviceIds" resultMap="device_alarmlogResult" parameterType="List">
+		SELECT 
+			Id,deviceId,deviceName,alarmTime,alarmRelTime,alarmNum,buildId
+		FROM 
+			zigbeedata.device_alarmlog
+		WHERE 
+			alarmRelTime IS NOT NULL AND deviceId IN
+		<foreach collection="list" item="id" index="index" open="(" close=")" separator=",">
+			#{id}
+		</foreach>
+	</select>
+	
+</mapper>

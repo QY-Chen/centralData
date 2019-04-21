@@ -1,0 +1,20 @@
+input{
+    margin-top: 1ch;
+}
+#query_entry{
+    margin-top: 0cm;
+    width: 100% ;
+    height: 100px;
+    background: #BDEBEE;
+}
+#query_resule{
+    background:#bbbbbb;
+    width: 100% ;
+    height: 600px;
+    margin-top: 1ch;
+}
+#query_table{
+
+    border: black;
+    width: 100%;
+}

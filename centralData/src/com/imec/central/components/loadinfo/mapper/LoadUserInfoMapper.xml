@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.imec.central.components.loadinfo.mapper.LoadUserInfoMapper">
+    <resultMap id="userJsonData" type="com.imec.central.components.loadinfo.pojo.UserInfoData">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="username" column="username"/>
+        <result property="account" column="account"/>
+        <result property="password" column="password"/>
+        <result property="mail" column="mail"/>
+        <result property="authority" column="authority"/>
+        <result property="phone" column="phone"/>
+    </resultMap>
+
+    <select id="getAllDataForJSON" resultMap="userJsonData">
+        SELECT  * FROM admininfo
+    </select>
+</mapper>

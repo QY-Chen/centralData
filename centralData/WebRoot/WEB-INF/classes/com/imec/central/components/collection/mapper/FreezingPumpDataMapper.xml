@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.imec.central.components.collection.mapper.FreezingPumpDataMapper">
+
+    <resultMap id="freezingPump" type="com.imec.central.components.collection.pojo.FreezingPumpData">
+        <result property="id"/>
+        <result property="status"/>
+        <result property="num"/>
+        <result property="frequencyStatus"/>
+        <result property="frequencyAlert"/>
+        <result property="contactorStatus"/>
+        <result property="inverterStatus"/>
+        <result property="inverterAlert"/>
+        <result property="inverterAdjust"/>
+        <result property="inverterPowFeed"/>
+        <result property="startFailed"/>
+        <result property="supplyTemp"/>
+        <result property="returnTemp"/>
+        <result property="waterFlow"/>
+        <result property="waterPressure"/>
+        <result property="pumpPressure"/>
+        <result property="ammeter"/>
+        <result property="addTime"/>
+    </resultMap>
+
+    <insert id="addFreezPumpData" parameterType="Map">
+        INSERT INTO
+          freezing_pump(id,frequency_alert,contactor_status,inverter_status,inverter_alert,inverter_feedback,start_fail,supply_temp,return_temp,water_pressure_diff,pump_pressure_diff,ammeter,time,frequency_status,device_num,status,inverter_adjust)
+        VALUES
+          (NULL ,#{frequencyAlert},#{contactorStatus},#{inverterStatus},#{inverterAlter},#{inverterFeedback},#{startFail},NULL ,NULL ,NULL ,#{pressureDiff},NULL ,now(),#{frequencyRunStatus},#{deviceNum},#{status},#{inverterAdjust})
+    </insert>
+
+    <select id="queryFreezPumpById" resultType="Map" parameterType="int">
+        SELECT id,frequency_alert,contactor_status,inverter_status,inverter_alert,inverter_feedback,start_fail,supply_temp,return_temp,water_pressure_diff,pump_pressure_diff,ammeter,time,frequency_status,device_num,status,inverter_adjust
+        FROM freezing_pump
+        where device_num=#{num}
+        AND
+        time =(SELECT max(time) FROM chiller WHERE device_num=#{num})
+    </select>
+
+</mapper>

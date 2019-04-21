@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.imec.central.components.collection.mapper.PowConsumptionMapper">
+
+
+    <resultMap id="powConsumption" type="com.imec.central.components.collection.pojo.PowConsumption">
+        <result property="id"/>
+        <result property="num"/>
+        <result property="name"/>
+        <result property="value"/>
+        <result property="time"/>
+    </resultMap>
+
+    <insert id="addACTerminalPC" parameterType="com.imec.central.components.collection.pojo.PowConsumption">
+        INSERT  INTO
+          ac_terminal(act_num,act_name,act_value)
+        VALUES
+          (#{num},#{name},#{value});
+    </insert>
+
+    <insert id="addCoolingSource" parameterType="com.imec.central.components.collection.pojo.PowConsumption">
+        INSERT INTO
+          actp_hourdata(actpc_room_num,actpc_name,actpc_value)
+        VALUES
+           (#{num},#{name},#{value});
+    </insert>
+
+    <insert id="addAcTerminal" parameterType="com.imec.central.components.collection.pojo.PowConsumption">
+        INSERT INTO
+          cspc_hourdata(cspc_num,cspc_name,cspc_data)
+        VALUES
+           (#{num},#{name},#{value});
+    </insert>
+
+</mapper>

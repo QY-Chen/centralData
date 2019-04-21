@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	   xmlns:sec="http://www.springframework.org/schema/security"
+	   xmlns:context="http://www.springframework.org/schema/context"
+	   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	   xmlns:mvc="http://www.springframework.org/schema/mvc"
+	   xmlns:aop="http://www.springframework.org/schema/aop" xmlns:task="http://www.springframework.org/schema/task"
+	   xsi:schemaLocation="http://www.springframework.org/schema/beans
+                        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+                        http://www.springframework.org/schema/security 
+                        http://www.springframework.org/schema/security/spring-security-3.1.xsd
+                        http://www.springframework.org/schema/context
+                        http://www.springframework.org/schema/context/spring-context-3.1.xsd
+                        http://www.springframework.org/schema/aop 
+                        http://www.springframework.org/schema/aop/spring-aop-4.1.xsd
+                        http://www.springframework.org/schema/mvc
+                        http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+                        http://www.springframework.org/schema/task
+                        http://www.springframework.org/schema/task/spring-task.xsd">
+
+	<context:property-placeholder
+		ignore-unresolvable="true" location="classpath:global-config-file.properties" />
+	<!-- 全局方法保护（独立于访问路径控制，不使用WebExpressionVoter） ========================================= 
+		*需要用到来自autheticationManager的验证和授权（即Authorities） *使用独立的accessDecisionManager作为投票机制 
+		*支持@Secure标签 <sec:global-method-security secured-annotations="enabled" proxy-target-class="true" 
+		access-decision-manager-ref="accessDecisionManager" authentication-manager-ref="authenticationManager" 
+		/> -->
+	<!-- 只允许跳转到该路径下的主页 -->
+	<!-- 声明一个控制器配置 <bean class="com.es.bems.mvc.ControllerSettingsImp"> <property 
+		name="properties"> <map> <entry key="homePagePattern" ><value>${controller.homepagePattern}</value></entry> 
+		<entry key="identityUrl" ><value>${controller.identityUrl}</value></entry> 
+		<entry key="backendUrl" ><value>${auth.backend.url}</value></entry> </map> 
+		</property> </bean> -->
+	<!-- 声明允许使用MVC标签 -->
+	<mvc:annotation-driven />
+
+	<!-- 声明扫描所有mvc包下的所有Controller标签，并为其建立支持（及@Autowire的Bean建立等） -->
+	<context:component-scan base-package="com.imec.central.mvc">
+		<context:include-filter type="annotation"
+			expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+
+	<!-- 配置aop组件扫描 -->
+	<!--<context:component-scan base-package="com.imec.central.aop"/>-->
+	<!--<aop:aspectj-autoproxy/>-->
+	
+	<!-- Json转换器配置 -->
+	<!-- Json转换器配置 -->
+    <bean id="mappingJackson2HttpMessageConverter" 
+        class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">    
+        <property name="supportedMediaTypes">    
+            <list>    
+                <value>application/json;charset=UTF-8</value>
+            </list>    
+        </property>    
+    </bean>     
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">    
+        <property name="messageConverters">    
+            <list>    
+                <ref bean="mappingJackson2HttpMessageConverter" />
+            </list>    
+        </property>    
+    </bean>  
+
+
+	<!-- 授权验证投票器，不允许匿名访问受限资源 <bean id="authenticatedVoter" class="org.springframework.security.access.vote.AuthenticatedVoter" 
+		/> -->
+
+	<!-- 用户角色投票，支持使用@Secure标签对authority进行hasRole验证 <bean id="roleVoter" class="org.springframework.security.access.vote.RoleVoter"> -->
+	<!-- 不做前缀过滤 <property name="rolePrefix" value="" /> </bean> -->
+
+	<!-- 决策投票器 <bean id="accessDecisionManager" class="org.springframework.security.access.vote.AffirmativeBased"> 
+		<constructor-arg name="decisionVoters"> <list> <ref bean="roleVoter" /> <ref 
+		bean="authenticatedVoter" /> </list> </constructor-arg> </bean> -->
+
+	<!--<bean id="authInterceptor"
+		class="com.imec.central.components.auth.interceptor.UserLoginAuthenticator">
+	</bean>-->
+
+	<!--<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/admin/**" />
+			<mvc:mapping path="/ecmonitor/**" />
+			<mvc:mapping path="/control/**" />
+			<mvc:mapping path="/entitymgr/**" />
+			<mvc:mapping path="/equipmt/**" />
+			<mvc:mapping path="/indicators/**" />
+			<mvc:mapping path="/realtime/**" />
+			<mvc:mapping path="/report/**" />
+			<mvc:mapping path="/entity/**" />
+			<mvc:mapping path="/quota/**" />
+			<mvc:mapping path="/monitor/**" />
+			<mvc:mapping path="/index/**" />
+
+			<ref bean="authInterceptor" />
+		</mvc:interceptor>
+	</mvc:interceptors>-->
+
+
+	<bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix">
+			<value>/WEB-INF/pages/</value>
+		</property>
+		<property name="suffix">
+			<value>.do</value>
+		</property>
+		<property name="viewClass">
+			<value>org.springframework.web.servlet.view.JstlView</value>
+		</property>
+	</bean>
+
+	<!-- <bean class="com.es.bems.mvc.handler.PageControllerExceptionHandler"/> -->
+
+	<mvc:resources location="/resources/js/" mapping="/js/**" />
+	<mvc:resources location="/resources/scripts/" mapping="/scripts/**" />
+	<mvc:resources location="/resources/font/" mapping="/font/**" />
+	<mvc:resources location="/resources/css/" mapping="/css/**" />
+	<mvc:resources location="/resources/images/" mapping="/images/**" />
+	<mvc:resources location="resources/bootstrap/" mapping="/bootstrap/**" />
+	<mvc:resources location="/resources/root/" mapping="/**" />
+</beans>

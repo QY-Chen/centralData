@@ -1,0 +1,14 @@
+<component name="libraryTable">
+  <library name="scala-sdk-2.10.61">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/WebRoot/WEB-INF/scala-reflect-2.10.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/WebRoot/WEB-INF/scala-library-2.10.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/WebRoot/WEB-INF/scala-compiler-2.10.6.jar!/" />
+      <root url="file://$PROJECT_DIR$" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="file://$PROJECT_DIR$/src" />
+    </SOURCES>
+  </library>
+</component>

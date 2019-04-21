@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+	xmlns:beans="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/security
+	http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+	<!-- 当前通过database配置interceptUrl与Role关系的实现，暂时不支持use-expressions="true"模式 -->
+	<http auto-config="true">
+
+		<form-login login-page="/login"
+			authentication-success-handler-ref="basicAuthenticationSuccessHandler"
+			authentication-failure-url="/login?error=true" />
+
+		<logout logout-url="/logout" logout-success-url="/login" />
+
+	</http>
+	
+	<beans:bean id="basicAuthenticationSuccessHandler"
+		class="com.imec.central.components.auth.security.authentication.BasicAuthenticationSuccessHandler"></beans:bean>
+
+	<beans:bean id="basicUserDetailsService"
+		class="com.imec.central.components.auth.security.authentication.BasicUserDetailsServiceImpl">
+	</beans:bean>
+
+	<authentication-manager>
+		<authentication-provider user-service-ref="basicUserDetailsService">
+			 <password-encoder hash="sha" /> 
+		</authentication-provider>
+	</authentication-manager> 
+
+	<beans:bean id="databaseSecurityMetadataSource"
+		class="com.imec.central.components.auth.security.authorisation.DatabaseFilterInvocationSecurityMetadataSource">
+		<beans:constructor-arg ref="resourceService" />
+	</beans:bean>
+
+	<beans:bean id="securityMetadataSourceBeanPostProcessor"
+		class="com.imec.central.components.auth.security.authorisation.FilterSecurityInterceptorPostProcessor">
+		<beans:property name="securityMetadataSource" ref="databaseSecurityMetadataSource" />
+	</beans:bean>
+
+</beans:beans>
